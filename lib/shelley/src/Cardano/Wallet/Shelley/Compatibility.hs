@@ -522,7 +522,7 @@ fromCardanoHash = W.Hash . fromShort . getOneEraHash
 
 fromPrevHash
     :: W.Hash "BlockHeader"
-    -> SL.PrevHash sc
+    -> SLAPI.PrevHash sc
     -> W.Hash "BlockHeader"
 fromPrevHash genesisHash = \case
     SL.GenesisHash -> genesisHash

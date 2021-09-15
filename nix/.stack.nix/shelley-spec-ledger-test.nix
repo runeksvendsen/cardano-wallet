@@ -39,6 +39,7 @@
           (hsPkgs."cardano-ledger-core" or (errorHandler.buildDepError "cardano-ledger-core"))
           (hsPkgs."cardano-prelude-test" or (errorHandler.buildDepError "cardano-prelude-test"))
           (hsPkgs."cardano-prelude" or (errorHandler.buildDepError "cardano-prelude"))
+          (hsPkgs."cardano-protocol-tpraos" or (errorHandler.buildDepError "cardano-protocol-tpraos"))
           (hsPkgs."cardano-slotting" or (errorHandler.buildDepError "cardano-slotting"))
           (hsPkgs."cborg" or (errorHandler.buildDepError "cborg"))
           (hsPkgs."containers" or (errorHandler.buildDepError "containers"))
@@ -88,6 +89,7 @@
             (hsPkgs."cardano-ledger-core" or (errorHandler.buildDepError "cardano-ledger-core"))
             (hsPkgs."cardano-prelude-test" or (errorHandler.buildDepError "cardano-prelude-test"))
             (hsPkgs."cardano-prelude" or (errorHandler.buildDepError "cardano-prelude"))
+            (hsPkgs."cardano-protocol-tpraos" or (errorHandler.buildDepError "cardano-protocol-tpraos"))
             (hsPkgs."cardano-slotting" or (errorHandler.buildDepError "cardano-slotting"))
             (hsPkgs."cborg" or (errorHandler.buildDepError "cborg"))
             (hsPkgs."containers" or (errorHandler.buildDepError "containers"))
@@ -124,6 +126,7 @@
             (hsPkgs."cardano-crypto-praos" or (errorHandler.buildDepError "cardano-crypto-praos"))
             (hsPkgs."cardano-ledger-core" or (errorHandler.buildDepError "cardano-ledger-core"))
             (hsPkgs."cardano-prelude" or (errorHandler.buildDepError "cardano-prelude"))
+            (hsPkgs."cardano-protocol-tpraos" or (errorHandler.buildDepError "cardano-protocol-tpraos"))
             (hsPkgs."cardano-slotting" or (errorHandler.buildDepError "cardano-slotting"))
             (hsPkgs."containers" or (errorHandler.buildDepError "containers"))
             (hsPkgs."criterion" or (errorHandler.buildDepError "criterion"))
@@ -145,12 +148,12 @@
     } // {
     src = (pkgs.lib).mkDefault (pkgs.fetchgit {
       url = "https://github.com/input-output-hk/cardano-ledger-specs";
-      rev = "6aa1cd0a64a464371b94d4ac182e7e2cddc83a36";
-      sha256 = "1yv2biqc2q01xn7i7h7d1yn8dzygnqn8mywpjfs1i0pa7gnf5q14";
+      rev = "ab138130d979d273f31a7a383c9ab81906e0727c";
+      sha256 = "1pqdm1v6sjf19z3cy4jsyj81wizwafa1lprafnwn5plqd9qimz55";
       }) // {
       url = "https://github.com/input-output-hk/cardano-ledger-specs";
-      rev = "6aa1cd0a64a464371b94d4ac182e7e2cddc83a36";
-      sha256 = "1yv2biqc2q01xn7i7h7d1yn8dzygnqn8mywpjfs1i0pa7gnf5q14";
+      rev = "ab138130d979d273f31a7a383c9ab81906e0727c";
+      sha256 = "1pqdm1v6sjf19z3cy4jsyj81wizwafa1lprafnwn5plqd9qimz55";
       };
     postUnpack = "sourceRoot+=/shelley/chain-and-ledger/shelley-spec-ledger-test; echo source root reset to \$sourceRoot";
     }
