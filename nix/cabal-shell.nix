@@ -64,4 +64,7 @@ mkShell rec {
 
   # Force a UTF-8 locale because many Haskell programs and tests assume this.
   LANG = "en_US.UTF-8";
+
+  # Provide SSL certificates for git, in case we are running in a pure nix-shell.
+  GIT_SSL_CAINFO = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
 }
