@@ -71,6 +71,7 @@ module Cardano.CLI
     , Service
     , TxId
     , Port (..)
+    , Hostname (..)
 
     -- * Logging
     , withLogging
@@ -406,7 +407,7 @@ cmdWallet cmdCreate mkClient =
 
 -- | Arguments for 'wallet list' command
 newtype WalletListArgs = WalletListArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     }
 
 cmdWalletList
@@ -418,7 +419,7 @@ cmdWalletList mkClient =
         <> progDesc "List all known wallets."
   where
     cmd = fmap exec $ WalletListArgs
-        <$> portOption
+        <$> serverOption
     exec (WalletListArgs wPort) = do
         runClient wPort Aeson.encodePretty $ listWallets mkClient
 
@@ -444,7 +445,7 @@ cmdByronWalletCreate mkClient =
         <> cmdByronWalletCreateFromMnemonic mkClient
 
 data ByronWalletCreateFromMnemonicArgs = ByronWalletCreateFromMnemonicArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _name :: WalletName
     , _style :: ByronWalletStyle
     }
@@ -457,7 +458,7 @@ cmdByronWalletCreateFromMnemonic mkClient =
         <> progDesc "Create a new wallet using a recovery phrase."
   where
     cmd = fmap exec $ ByronWalletCreateFromMnemonicArgs
-        <$> portOption
+        <$> serverOption
         <*> walletNameArgument
         <*> walletStyleOption Icarus [Random,Icarus,Trezor,Ledger]
     exec (ByronWalletCreateFromMnemonicArgs wPort wName wStyle) = case wStyle of
@@ -511,7 +512,7 @@ cmdByronWalletCreateFromMnemonic mkClient =
 
 -- | Arguments for 'wallet create' command
 data WalletCreateArgs = WalletCreateArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _name :: WalletName
     , _gap :: AddressPoolGap
     }
@@ -524,7 +525,7 @@ cmdWalletCreateFromMnemonic mkClient =
         <> progDesc "Create a new wallet using a recovery phrase."
   where
     cmd = fmap exec $ WalletCreateArgs
-        <$> portOption
+        <$> serverOption
         <*> walletNameArgument
         <*> poolGapOption
     exec (WalletCreateArgs wPort wName wGap) = do
@@ -551,7 +552,7 @@ cmdWalletCreateFromMnemonic mkClient =
 
 -- | Arguments for 'wallet create from-public-key' command
 data WalletCreateFromPublicKeyArgs = WalletCreateFromPublicKeyArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _name :: WalletName
     , _gap :: AddressPoolGap
     , _key :: ApiAccountPublicKey
@@ -565,7 +566,7 @@ cmdWalletCreateFromPublicKey mkClient =
     <> progDesc "Create a wallet using a public account key."
   where
     cmd = fmap exec $ WalletCreateFromPublicKeyArgs
-        <$> portOption
+        <$> serverOption
         <*> walletNameArgument
         <*> poolGapOption
         <*> accPubKeyArgument
@@ -578,7 +579,7 @@ cmdWalletCreateFromPublicKey mkClient =
 
 -- | Arguments for 'wallet get' command
 data WalletGetArgs = WalletGetArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _id :: WalletId
     }
 
@@ -591,7 +592,7 @@ cmdWalletGet mkClient =
         <> progDesc "Fetch the wallet with specified id."
   where
     cmd = fmap exec $ WalletGetArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
     exec (WalletGetArgs wPort wId) = do
         runClient wPort Aeson.encodePretty $ getWallet mkClient $
@@ -611,7 +612,7 @@ cmdWalletUpdate mkClient =
 
 -- | Arguments for 'wallet update name' command
 data WalletUpdateNameArgs = WalletUpdateNameArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _id :: WalletId
     , _name :: WalletName
     }
@@ -625,7 +626,7 @@ cmdWalletUpdateName mkClient =
         <> progDesc "Update a wallet's name."
   where
     cmd = fmap exec $ WalletUpdateNameArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> walletNameArgument
     exec (WalletUpdateNameArgs wPort wId wName) = do
@@ -635,7 +636,7 @@ cmdWalletUpdateName mkClient =
 
 -- | Arguments for 'wallet update passphrase' command
 data WalletUpdatePassphraseArgs = WalletUpdatePassphraseArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _id :: WalletId
     }
 
@@ -648,7 +649,7 @@ cmdWalletUpdatePassphrase mkClient =
         <> progDesc "Update a wallet's passphrase."
   where
     cmd = fmap exec $ WalletUpdatePassphraseArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
     exec (WalletUpdatePassphraseArgs wPort wId) = do
         res <- sendRequest wPort $ getWallet mkClient $ ApiT wId
@@ -668,7 +669,7 @@ cmdWalletUpdatePassphrase mkClient =
 
 -- | Arguments for 'wallet delete' command
 data WalletDeleteArgs = WalletDeleteArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _id :: WalletId
     }
 
@@ -680,7 +681,7 @@ cmdWalletDelete mkClient =
         <> progDesc "Deletes wallet with specified wallet id."
   where
     cmd = fmap exec $ WalletDeleteArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
     exec (WalletDeleteArgs wPort wId) = do
         runClient wPort (const "") $ deleteWallet mkClient $
@@ -695,7 +696,7 @@ cmdWalletGetUtxoSnapshot mkClient =
         <> progDesc "Get UTxO snapshot for wallet with specified id."
   where
     cmd = fmap exec $ WalletGetArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
     exec (WalletGetArgs wPort wId) = do
         res <- sendRequest wPort $ getWallet mkClient $ ApiT wId
@@ -715,7 +716,7 @@ cmdWalletGetUtxoStatistics mkClient =
         <> progDesc "Get UTxO statistics for the wallet with specified id."
   where
     cmd = fmap exec $ WalletGetArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
     exec (WalletGetArgs wPort wId) = do
         res <- sendRequest wPort $ getWallet mkClient $ ApiT wId
@@ -761,7 +762,7 @@ cmdTransactionBase isShelley mkTxClient mkWalletClient =
 
 -- | Arguments for 'transaction create' command
 data TransactionCreateArgs t = TransactionCreateArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _id :: WalletId
     , _payments :: NonEmpty Text
     , _metadata :: ApiTxMetadata
@@ -784,7 +785,7 @@ cmdTransactionCreate isShelley mkTxClient mkWalletClient =
         <> progDesc "Create and submit a new transaction."
   where
     cmd = fmap exec $ TransactionCreateArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> fmap NE.fromList (some paymentOption)
         <*> whenShelley (ApiTxMetadata Nothing) metadataOption isShelley
@@ -820,7 +821,7 @@ cmdTransactionFees isShelley mkTxClient mkWalletClient =
         <> progDesc "Estimate fees for a transaction."
   where
     cmd = fmap exec $ TransactionCreateArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> fmap NE.fromList (some paymentOption)
         <*> whenShelley (ApiTxMetadata Nothing) metadataOption isShelley
@@ -844,7 +845,7 @@ cmdTransactionFees isShelley mkTxClient mkWalletClient =
 
 -- | Arguments for 'transaction list' command.
 data TransactionListArgs = TransactionListArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _walletId :: WalletId
     , _timeRangeStart :: Maybe Iso8601Time
     , _timeRangeEnd :: Maybe Iso8601Time
@@ -859,7 +860,7 @@ cmdTransactionList mkTxClient =
         <> progDesc "List the transactions associated with a wallet."
   where
     cmd = fmap exec $ TransactionListArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> optional timeRangeStartOption
         <*> optional timeRangeEndOption
@@ -874,7 +875,7 @@ cmdTransactionList mkTxClient =
 
 -- | Arguments for 'transaction submit' command
 data TransactionSubmitArgs = TransactionSubmitArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _payload :: ApiBytesT 'Base16 SerialisedTx
     }
 
@@ -886,7 +887,7 @@ cmdTransactionSubmit mkTxClient =
         <> progDesc "Submit an externally-signed transaction."
   where
     cmd = fmap exec $ TransactionSubmitArgs
-        <$> portOption
+        <$> serverOption
         <*> transactionSubmitPayloadArgument
     exec (TransactionSubmitArgs wPort wPayload) = do
         runClient wPort Aeson.encodePretty $
@@ -894,7 +895,7 @@ cmdTransactionSubmit mkTxClient =
 
 -- | Arguments for 'transaction forget' command
 data TransactionForgetArgs = TransactionForgetArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _wid :: WalletId
     , _txid :: TxId
     }
@@ -907,7 +908,7 @@ cmdTransactionForget mkClient =
         <> progDesc "Forget a pending transaction with specified id."
   where
     cmd = fmap exec $ TransactionForgetArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> transactionIdArgument
     exec (TransactionForgetArgs wPort wId txId) = do
@@ -917,7 +918,7 @@ cmdTransactionForget mkClient =
 
 -- | Arguments for 'transaction get' command
 data TransactionGetArgs = TransactionGetArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _wid :: WalletId
     , _txid :: TxId
     }
@@ -930,7 +931,7 @@ cmdTransactionGet mkClient =
         <> progDesc "Get a transaction with specified id."
   where
     cmd = fmap exec $ TransactionGetArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> transactionIdArgument
     exec (TransactionGetArgs wPort wId txId) = do
@@ -956,7 +957,7 @@ cmdAddress mkClient =
 
 -- | Arguments for 'address list' command
 data AddressListArgs = AddressListArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _state :: Maybe AddressState
     , _id :: WalletId
     }
@@ -969,7 +970,7 @@ cmdAddressList mkClient =
         <> progDesc "List all known addresses of a given wallet."
   where
     cmd = fmap exec $ AddressListArgs
-        <$> portOption
+        <$> serverOption
         <*> optional addressStateOption
         <*> walletIdArgument
     exec (AddressListArgs wPort wState wId) = do
@@ -979,7 +980,7 @@ cmdAddressList mkClient =
 
 -- | Arguments for 'address create' command
 data AddressCreateArgs = AddressCreateArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _addressIndex :: Maybe (Index 'Hardened 'AddressK)
     , _id :: WalletId
     }
@@ -994,7 +995,7 @@ cmdAddressCreate mkClient =
             \a random one."
   where
     cmd = fmap exec $ AddressCreateArgs
-        <$> portOption
+        <$> serverOption
         <*> optional addressIndexOption
         <*> walletIdArgument
     exec (AddressCreateArgs wPort wIx wId) = do
@@ -1005,7 +1006,7 @@ cmdAddressCreate mkClient =
 
 -- | Arguments for 'address import' command
 data AddressImportArgs = AddressImportArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _id :: WalletId
     , _addr :: Text
     }
@@ -1019,7 +1020,7 @@ cmdAddressImport mkClient =
             \for random wallets. The address must belong to the target wallet."
   where
     cmd = fmap exec $ AddressImportArgs
-        <$> portOption
+        <$> serverOption
         <*> walletIdArgument
         <*> addressIdArgument
     exec (AddressImportArgs wPort wId addr) = do
@@ -1055,7 +1056,7 @@ cmdStakePool mkClient =
 
 -- | Arguments for 'stake-pool list' command
 data StakePoolListArgs = StakePoolListArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _stake :: Maybe Coin
     }
 
@@ -1068,7 +1069,7 @@ cmdStakePoolList mkClient =
         <> progDesc "List all known stake pools."
   where
     cmd = fmap exec $ StakePoolListArgs
-        <$> portOption <*> stakeOption
+        <$> serverOption <*> stakeOption
     exec (StakePoolListArgs wPort stake) = do
         runClient wPort Aeson.encodePretty $ listPools mkClient (ApiT <$> stake)
 
@@ -1090,7 +1091,7 @@ cmdNetwork mkClient =
 
 -- | Arguments for 'network information' command
 newtype NetworkInformationArgs = NetworkInformationArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     }
 
 cmdNetworkInformation
@@ -1101,13 +1102,13 @@ cmdNetworkInformation mkClient =
         <> progDesc "View network information."
   where
     cmd = fmap exec $ NetworkInformationArgs
-        <$> portOption
+        <$> serverOption
     exec (NetworkInformationArgs wPort) = do
         runClient wPort Aeson.encodePretty (networkInformation mkClient)
 
 -- | Arguments for 'network parameters' command
 newtype NetworkParametersArgs = NetworkParametersArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     }
 
 cmdNetworkParameters
@@ -1118,13 +1119,13 @@ cmdNetworkParameters mkClient =
         <> progDesc "View network parameters for the current epoch."
   where
     cmd = fmap exec $ NetworkParametersArgs
-        <$> portOption
+        <$> serverOption
     exec (NetworkParametersArgs wPort) = do
         runClient wPort Aeson.encodePretty $ networkParameters mkClient
 
 -- | Arguments for 'network clock' command
 data NetworkClockArgs = NetworkClockArgs
-    { _port :: Port "Wallet"
+    { _port :: Hostname "Wallet"
     , _forceNtpCheck :: Bool
     }
 
@@ -1136,7 +1137,7 @@ cmdNetworkClock mkClient =
         <> progDesc "View NTP offset."
   where
     cmd = fmap exec $ NetworkClockArgs
-        <$> portOption
+        <$> serverOption
         <*> forceNtpCheckOption
     exec (NetworkClockArgs wPort forceNtpCheck) = do
         runClient wPort Aeson.encodePretty $ networkClock mkClient forceNtpCheck
@@ -1229,6 +1230,15 @@ portOption = optionT $ mempty
     <> metavar "INT"
     <> help "port used for serving the wallet API."
     <> value (Port 8090)
+    <> showDefaultWith showT
+
+-- | [--server=HOSTNAME], default: localhost:8090
+serverOption :: Parser (Hostname "Wallet")
+serverOption = optionT $ mempty
+    <> long "server"
+    <> metavar "HOSTNAME"
+    <> help "the hostname of the wallet server."
+    <> value (Hostname "localhost" (Port 8090))
     <> showDefaultWith showT
 
 -- | [--shutdown-handler]
@@ -1479,7 +1489,7 @@ fromTextS = left getTextDecodingError . fromText . T.pack
 
 runClient
     :: forall a. ()
-    => Port "Wallet"
+    => Hostname "Wallet"
     -> (a -> BL.ByteString)
     -> ClientM a
     -> IO ()
@@ -1489,13 +1499,13 @@ runClient p encode cmd = do
 
 sendRequest
     :: forall a. ()
-    => Port "Wallet"
+    => Hostname "Wallet"
     -> ClientM a
     -> IO (Either ClientError a)
-sendRequest (Port p) cmd = do
+sendRequest (Hostname h (Port p)) cmd = do
     manager <- newManager $ defaultManagerSettings
         { managerResponseTimeout = responseTimeoutNone }
-    let env = mkClientEnv manager (BaseUrl Http "localhost" p "")
+    let env = mkClientEnv manager (BaseUrl Http (T.unpack h) p "")
     runClientM cmd env
 
 handleResponse
@@ -1549,6 +1559,32 @@ instance FromText (Port tag) where
 
 instance ToText (Port tag) where
     toText (Port p) = toText p
+
+-- | A hostname and a port. Tagged for describing what it is used for.
+data Hostname (tag :: Symbol) = Hostname Text (Port tag)
+    deriving stock (Eq, Generic, Ord, Show)
+
+-- | NB: Port is optional (defaults to 8090)
+instance FromText (Hostname tag) where
+    fromText t = do
+        let splitLst = T.split (== ':') t
+        case splitLst of
+            [hostname] ->
+                return $ Hostname hostname (Port 8090)
+            [hostname, port] ->
+                bimap (const err) id $ Hostname hostname <$> fromText port
+            _ ->
+                Left err
+      where
+        err = TextDecodingError
+            $ "expected a hostname, optionally followed by a colon"
+            <> " and a TCP port number between "
+            <> show (getPort minBound)
+            <> " and "
+            <> show (getPort maxBound)
+
+instance ToText (Hostname tag) where
+    toText (Hostname h p) = h <> ":" <> toText p
 
 -- | Wrapper type around 'Text' to make its semantic more explicit
 newtype Service = Service Text deriving newtype (IsString, Show, Eq)
